@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block title %}
+detail    
+{% endblock %}
+
+
+{% block body %}
+  <div class="d-flex justify-content-between mb-3">
+    <h3>{{ article.title }}</h3>
+    <div>{{ article.creator.username }}</div>
+  </div>
+  <hr>
+  {% comment %} 좋아요 {% endcomment %}
+  {% comment %} 해시태그 {% endcomment %}
+  <p class="mb-5">{{ article.content }}</p>
+  <p class="small my-0 text-right text-secondary">{{ article.updated_at }} (updated)</p>
+  <p class="small my-0 text-right text-secondary">{{ article.created_at }} (created)</p>
+  <div class="w-100 d-flex justify-content-between mt-3">
+    <a class="btn btn-secondary w-25" href="{% url 'community:index' %}">Back</a>
+    <a class="btn btn-primary w-25" href="#">Edit</a>
+    <button type="button" class="btn btn-danger w-25" data-toggle="modal" data-target="#staticBackdrop">Delete</button>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">경고</h5>
+        </div>
+        <div class="modal-body">
+          삭제하시겠습니까?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary py-1" data-dismiss="modal">Cancel</button>
+          <form action="#" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger py-1">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

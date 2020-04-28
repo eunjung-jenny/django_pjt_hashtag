@@ -12,7 +12,7 @@
   {% for article in articles %}
   <div class="col mb-4">
     <div class="card" style="width: 18rem;">
-      <a href="#">
+      <a href="{% url 'community:detail' article.pk %}">
         <div class="card-body">
           <h5 class="card-title">{{ article.title|slice:":23" }}...</h5>
           <h6 class="card-subtitle mb-2 text-muted">{{ article.updated_at|naturaltime }}</h6>

@@ -39,3 +39,11 @@ def like(request, article_pk):
     else:
         article.like_users.add(request.user)
     return redirect('community:index')
+
+@login_required
+def detail(request, article_pk):
+    article = get_object_or_404(Article, pk=article_pk)
+    context = {
+        'article': article,
+    }
+    return render(request, 'community/detail.html', context)
