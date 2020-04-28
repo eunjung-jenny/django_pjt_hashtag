@@ -30,3 +30,12 @@ def post(request):
         'form': form
     }    
     return render(request, 'community/post.html', context)
+
+@login_required
+def like(request, article_pk):
+    article = get_object_or_404(Article, pk=article_pk)
+    if request.user in article.like_users.all():
+        article.like_users.remove(request.user)    
+    else:
+        article.like_users.add(request.user)
+    return redirect('community:index')

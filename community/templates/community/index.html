@@ -12,14 +12,23 @@
   {% for article in articles %}
   <div class="col mb-4">
     <div class="card" style="width: 18rem;">
-      <div class="card-body">
-        <h5 class="card-title">{{ article.title }}</h5>
-        <h6 class="card-subtitle mb-2 text-muted">{{ article.updated_at|naturaltime }}</h6>
-        <p class="card-text">{{ article.content|slice:":100" }}...</p>
-      </div>
+      <a href="#">
+        <div class="card-body">
+          <h5 class="card-title">{{ article.title|slice:":23" }}...</h5>
+          <h6 class="card-subtitle mb-2 text-muted">{{ article.updated_at|naturaltime }}</h6>
+          <p class="card-text">{{ article.content|slice:":100" }}...</p>
+        </div>
+      </a>
       <div class="card-footer">
-        <span href="#" class="card-link">{{ article.creator.username }}</span>
-        <span href="#" class="card-link">좋아요 {{ article.like_users.count }}</span>
+        <a href="#" class="card-link">{{ article.creator.username }}</a>
+        <a href="{% url 'community:like' article.pk %}" class="card-link">
+          {% if request.user in article.like_users.all %}
+          좋아요 취소
+          {% else %}
+          좋아요
+          {% endif %}
+        </a>
+        <small>{{ article.like_users.count }} 명이 좋아합니다.</small>
       </div>
     </div>
   </div>

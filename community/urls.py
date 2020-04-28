@@ -6,4 +6,5 @@ app_name = 'community'
 urlpatterns = [
     path('', views.index, name='index'),
     path('post/', views.post, name='post'),
+    path('<int:article_pk>/like/', views.like, name='like'),
 ]
