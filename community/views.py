@@ -73,9 +73,13 @@ def edit(request, article_pk):
 
                 hashtags = request.POST['hashtags'].split('#')[1:]
                 for hashtag in hashtags:
-                    h = Hashtag()
-                    h.tag = hashtag
-                    h.save()
+                    if not Hashtag.objects.filter(tag=hashtag).exists():
+                        h = Hashtag()
+                        h.tag = hashtag
+                        h.save()
+                    else:
+                        h = Hashtag.objects.get(tag=hashtag)
+                    
                     h.has_articles.add(article)
                 messages.success(request, '글을 성공적으로 수정하였습니다.')
                 return redirect('community:detail', article_pk) 
@@ -100,3 +104,13 @@ def delete(request, article_pk):
     if request.method == 'POST' and request.user.is_authenticated and request.user == article.creator:
         article.delete()
     return redirect('community:index')
+
+def search(request):
+    term = request.GET.get('term')
+    hashtag = Hashtag.objects.get(tag=term)        
+    articles = Article.objects.filter(has_hashtags=hashtag)
+    
+    context = {
+        'articles': articles
+    }
+    return render(request, 'community/index.html', context)

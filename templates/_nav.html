@@ -4,8 +4,8 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark container justify-content-between">
     <a class="navbar-brand text-warning" href="{% url 'community:index' %}">Minigram</a>
 
-    <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search by hashtag" aria-label="Search">
+    <form class="form-inline my-2 my-lg-0" action="{% url 'community:search' %}">
+      <input class="form-control mr-sm-2" name="term" type="search" placeholder="Search by hashtag" aria-label="Search">
     </form>
 
     <div>
