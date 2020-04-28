@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block title %}
+    {% if request.resolver_match.url_name == 'join' %}
+    Join
+    {% elif request.resolver_match.url_name == 'login' %}
+    Login
+    {% elif request.resolver_match.url_name == 'settings' %}
+    Settings
+    {% elif request.resolver_match.url_name == 'change_password' %}
+    Change Password
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+<h3>
+    {% if request.resolver_match.url_name == 'join' %}
+    Join
+    {% elif request.resolver_match.url_name == 'login' %}
+    Login
+    {% elif request.resolver_match.url_name == 'settings' %}
+    Settings
+    {% elif request.resolver_match.url_name == 'change_password' %}
+    Change Password
+    {% endif %}
+</h3>
+<hr>
+
+<form method="POST">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    <a href="/" class="btn btn-secondary text-white">Back</a>
+    <button class="btn btn-primary">
+        {% if request.resolver_match.url_name == 'join' %}
+        Join
+        {% elif request.resolver_match.url_name == 'login' %}
+        Login
+        {% elif request.resolver_match.url_name == 'settings' %}
+        Confirm
+        {% elif request.resolver_match.url_name == 'change_password' %}
+        Change Password
+        {% endif %}
+    </button>
+    {% if request.resolver_match.url_name == 'settings' %}
+    <a href="{% url 'accounts:delete' %}" class="btn btn-danger text-white">Remove Account</a>
+    {% endif %}
+</form>
+{% endblock %}

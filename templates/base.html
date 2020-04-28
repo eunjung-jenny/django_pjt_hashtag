@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+{% load bootstrap4 static %}
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>{% block title %}{% endblock %} | Minigram</title>
+    {% bootstrap_css %}
+    {% block css %}{% endblock %}
+  </head>
+  <body>
+    {% include '_nav.html' %}
+
+    {% if messages %}
+      {% for message in messages %}
+        <div{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <main class='container mt-5'>
+    {% block body %}
+    {% endblock %}
+    </main>
+    
+    {% bootstrap_javascript jquery='full' %}
+  </body>
+</html>

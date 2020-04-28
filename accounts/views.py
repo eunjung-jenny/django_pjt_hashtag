@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.contrib.auth import login as user_login, import logout as user_logout, get_user_model
+from django.contrib.auth import login as user_login, logout as user_logout, get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import CustomUserCreationForm, CustomUserChangeForm, CustomPasswordChangeForm
 from django.contrib.auth.decorators import login_required
@@ -10,31 +10,41 @@ def join(request):
         if request.method == 'POST':
             form = CustomUserCreationForm(request.POST)
             if form.is_valid():
-                messages.success(request, f'{request.POST['username']} 회원님, 환영합니다.')
+                messages.success(request, '회원님, 환영합니다.')
                 new_user = form.save()
                 user_login(request, new_user)
+                return redirect('community:index')
             else:
                 messages.error(request, '회원가입에 실패하였습니다.')
         else:
-            messages.error(request, '잘못된 접근입니다. 회원가입 버튼을 클릭해주세요.')
+            form = CustomUserCreationForm()
+        context = {
+            'form': form
+        }
     else:
         messages.error(request, '이미 로그인되어 있습니다.')
-    return redirect('community:index')
+        return redirect('community:index')
+    return render(request, 'accounts/form.html', context)
 
 def login(request):
     if not request.user.is_authenticated:
         if request.method == 'POST':
             form = AuthenticationForm(request, request.POST)
             if form.is_valid():
-                messages.success(request, f'{request.POST['username']}  회원님, 반갑습니다.')
+                messages.success(request, '회원님, 반갑습니다.')
                 user_login(request, form.get_user())
+                return redirect('community:index')
             else:
                 messages.error(request, '로그인에 실패하였습니다.')
         else:
-           messages.error(request, '잘못된 접근입니다. 로그인 버튼을 클릭해주세요.') 
+           form = AuthenticationForm()
+        context = {
+            'form': form
+        }
     else:
         messages.error(request, '이미 로그인되어 있습니다.')
-    return redirect('community:index')
+        return redirect('community:index')
+    return render(request, 'accounts/form.html', context)
 
 
 def logout(request):

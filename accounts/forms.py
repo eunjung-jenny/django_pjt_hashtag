@@ -11,5 +11,4 @@ class CustomUserChangeForm(UserChangeForm):
         fields = ['username']
 
 class CustomPasswordChangeForm(PasswordChangeForm):
-    class Meta(PasswordChangeForm.Meta):
-        model = get_user_model()
+    model = get_user_model()

@@ -1,0 +1,41 @@
+{% load bootstrap4 %}
+
+<div class="bg-dark px-5 navbar-wrapper">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark container justify-content-between">
+    <a class="navbar-brand text-warning" href="{% url 'community:index' %}">Minigram</a>
+
+    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search by hashtag" aria-label="Search">
+    </form>
+
+    <div>
+      <ul class="navbar-nav">
+        {% if request.user.is_authenticated %}
+          <li class="nav-item mr-2">
+            <div class="nav-link btn btn-sm btn-secondary text-white">Post</div>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle btn btn-sm btn-secondary text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {{ request.user.username }}
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="{% url 'accounts:profile' request.user.pk %}">Profile</a>
+              {% comment %} <a class="dropdown-item" href="#">Favorites</a> {% endcomment %}
+              <a class="dropdown-item" href="{% url 'accounts:settings' %}">Settings</a>
+              <a class="dropdown-item" href="{% url 'accounts:logout'%}">Sign Out</a>
+            </div>
+          </li>
+        {% else %}
+          <li class="nav-item mr-2">
+            <a href="{% url 'accounts:join' %}"><button class="btn btn-info">
+              Join Now
+            </button></a>
+          </li>
+          <li class="nav-item mr-2">
+            <a class="nav-link text-white" href="{% url 'accounts:login' %}">Sign In</a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
+</div>
