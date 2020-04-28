@@ -11,7 +11,7 @@ class CommentForm(forms.ModelForm):
         model = Comment
         fields = ['content']
 
-class HaghtagForm(forms.ModelForm):
+class HashtagForm(forms.ModelForm):
     class Meta:
         model = Hashtag
         fields = ['tag']

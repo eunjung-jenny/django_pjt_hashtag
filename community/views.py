@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Article, Comment, Hashtag
-from .forms import ArticleForm, CommentForm, HaghtagForm
+from .forms import ArticleForm, CommentForm, HashtagForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
@@ -15,19 +15,31 @@ def index(request):
 @login_required
 def post(request):
     if request.method == 'POST':
-        form = ArticleForm(request.POST)
-        if form.is_valid():
-            article = form.save(commit=False)
+        article_form = ArticleForm(request.POST)
+        hashtag_form = HashtagForm(request.POST)
+        if article_form.is_valid() and hashtag_form.is_valid():
+            article = article_form.save(commit=False)
             article.creator = request.user
             article.save()
+            
+            hashtags = request.POST['tag'].split('#')[1:]
+            for hashtag in hashtags:
+                h = Hashtag()
+                h.tag = hashtag
+                h.save()
+            
+                h.has_articles.add(article)
+                
             messages.success(request, '글을 성공적으로 게시하였습니다.')
             return redirect('community:index')
         else:
             messages.error(request, '글 작성에 실패하였습니다.')
     else:
-        form = ArticleForm()
+        article_form = ArticleForm()
+        hashtag_form = HashtagForm()
     context = {
-        'form': form
+        'article_form': article_form,
+        'hashtag_form': hashtag_form
     }    
     return render(request, 'community/post.html', context)
 
