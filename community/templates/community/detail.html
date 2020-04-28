@@ -8,9 +8,18 @@ detail
 
 {% block body %}
   <div class="d-flex justify-content-between mb-3">
-    <h3>{{ article.title }}</h3>
-    <div>{{ article.creator.username }}</div>
-  </div>
+    <h3>{{ article.title }} <small>| by. {{ article.creator.username }}</small></h3>
+    <div>
+        <small>{{ article.like_users.count }} 명이 좋아합니다.</small>
+        <a href="{% url 'community:like' article.pk %}" class="card-link btn btn-sm btn-danger">
+          {% if request.user in article.like_users.all %}
+          좋아요 취소
+          {% else %}
+          좋아요
+          {% endif %}
+        </a>
+    </div>
+    </div>
   <hr>
   {% comment %} 좋아요 {% endcomment %}
   {% comment %} 해시태그 {% endcomment %}
