@@ -10,7 +10,7 @@ detail
   <div class="d-flex justify-content-between mb-3">
     <h3>{{ article.title }} <small>| by. {{ article.creator.username }}</small></h3>
     <div>
-        <small>{{ article.like_users.count }} 명이 좋아합니다.</small>
+        <span data-toggle="modal" data-target="#likeModal" style="cursor:pointer;">{{ article.like_users.count }} 명이 좋아합니다.</span>
         <a href="{% url 'community:like' article.pk %}" class="card-link btn btn-sm btn-danger">
           {% if request.user in article.like_users.all %}
           좋아요 취소
@@ -40,7 +40,32 @@ detail
     {% endif %}
   </div>
 
-  <!-- Modal -->
+<!-- LikeModal -->
+<div class="modal fade" id="likeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">이 글을 좋아하는 사람</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <ul>
+          {% for liker in article.like_users.all %}
+          <li>{{ liker.username }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- DeleteModal -->
   <div class="modal fade" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
