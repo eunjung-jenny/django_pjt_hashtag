@@ -24,7 +24,7 @@ def post(request):
             hashtags = request.POST['hashtags'].split('#')[1:]
             for hashtag in hashtags:
                 h = Hashtag()
-                h.tag = hashtag
+                h.tag = hashtag.strip()
                 h.save()
             
                 h.has_articles.add(article)
@@ -75,7 +75,7 @@ def edit(request, article_pk):
                 for hashtag in hashtags:
                     if not Hashtag.objects.filter(tag=hashtag).exists():
                         h = Hashtag()
-                        h.tag = hashtag
+                        h.tag = hashtag.strip()
                         h.save()
                     else:
                         h = Hashtag.objects.get(tag=hashtag)
@@ -107,9 +107,12 @@ def delete(request, article_pk):
 
 def search(request):
     term = request.GET.get('term')
-    hashtag = Hashtag.objects.get(tag=term)        
-    articles = Article.objects.filter(has_hashtags=hashtag)
-    
+    is_exist = Hashtag.objects.filter(tag=term).exists()        
+    if is_exist:
+        hashtag = Hashtag.objects.get(tag=term)
+        articles = Article.objects.filter(has_hashtags=hashtag)
+    else:
+        articles = []
     context = {
         'articles': articles
     }

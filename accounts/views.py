@@ -68,7 +68,7 @@ def settings(request):
         if form.is_valid():
             form.save()
             messages.success(request, '회원정보가 성공적으로 변경되었습니다.')
-            return redirect('accounts:profile')
+            return redirect('accounts:profile', request.user.username)
         else:
             messages.error(request, '회원정보 변경에 실패하였습니다.')
     else:
