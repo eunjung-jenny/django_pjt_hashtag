@@ -99,3 +99,14 @@ def delete(request):
     request.user.delete()
     messages.error(request, '계정이 삭제되었습니다.')
     return redirect('community:index')
+
+@login_required
+def follow(request, username):
+    User = get_user_model()
+    person = get_object_or_404(User, username=username)
+    if request.user in person.followers.all():
+        person.followers.remove(request.user)    
+    else:
+        person.followers.add(request.user)    
+
+    return redirect('accounts:profile', username)

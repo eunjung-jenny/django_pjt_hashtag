@@ -1,2 +1,105 @@
 {% extends 'base.html' %}
-Profile
+{% load bootstrap4 humanize %}
+
+{% block title %}
+    Profile
+{% endblock %}
+
+{% block body %}
+    {% if request.user == person %}
+    <h3> 나의 프로필</h3>
+    {% else %}
+    <h3>{{ person.username }}님의 프로필</h3>
+    {% endif %}
+<hr>
+
+<div>
+    {% if request.user != person %}
+        {% if request.user in person.followers.all %}
+            <a href="{% url 'accounts:follow' person.username %}"><button class="btn btn-secondary">팔로우 취소</button></a>
+        {% else %}
+            <a href="{% url 'accounts:follow' person.username %}"><button class="btn btn-primary">팔로우</button></a>
+        {% endif %}
+    {% endif %}
+    <div class="my-4">
+        게시글 {{ person.articles.count }} 팔로워 {{ person.followers.count }} 팔로우 {{ person.follows.count }}
+    </div>
+</div>
+<hr>
+
+<div>
+    {% if request.user == person %}
+    <h4>내가 작성한 글</h4>
+    {% else %}
+    <h4>{{ person.username }}님이 작성한 글</h4>
+    {% endif %}
+
+    <div class="row row-cols-1 row-cols-md-3">
+        {% for article in person.articles.all %}
+        <div class="col mb-4">
+            <div class="card" style="width: 18rem;">
+                <a href="#">
+                    <div class="card-body">
+                    <h5 class="card-title">{{ article.title|slice:":23" }}...</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ article.updated_at|naturaltime }}</h6>
+                    <p class="card-text">{{ article.content|slice:":100" }}...</p>
+                    </div>
+                </a>
+                <div class="card-footer">
+                    <a href="{% url 'accounts:profile' article.creator.username %}" class="card-link">{{ article.creator.username }}</a>
+                    <a href="{% url 'community:like' article.pk %}" class="card-link">
+                    {% if request.user in article.like_users.all %}
+                    좋아요 취소
+                    {% else %}
+                    좋아요
+                    {% endif %}
+                    </a>
+                    <small>{{ article.like_users.count }} 명이 좋아합니다.</small>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div> 아직 작성한 글이 없습니다. </div>
+        {% endfor %}
+    </div>
+</div>
+<hr>
+
+<div>
+    {% if request.user == person %}
+    <h4>내가 좋아요한 글</h4>
+    {% else %}
+    <h4>{{ person.username }}님이 좋아요한 글</h4>
+    {% endif %}
+
+    <div class="row row-cols-1 row-cols-md-3">
+        {% for article in person.like_articles.all %}
+        <div class="col mb-4">
+            <div class="card" style="width: 18rem;">
+                <a href="#">
+                    <div class="card-body">
+                    <h5 class="card-title">{{ article.title|slice:":23" }}...</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ article.updated_at|naturaltime }}</h6>
+                    <p class="card-text">{{ article.content|slice:":100" }}...</p>
+                    </div>
+                </a>
+                <div class="card-footer">
+                    <a href="{% url 'accounts:profile' article.creator.username %}" class="card-link">{{ article.creator.username }}</a>
+                    <a href="{% url 'community:like' article.pk %}" class="card-link">
+                    {% if request.user in article.like_users.all %}
+                    좋아요 취소
+                    {% else %}
+                    좋아요
+                    {% endif %}
+                    </a>
+                    <small>{{ article.like_users.count }} 명이 좋아합니다.</small>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div> 아직 좋아요한 글이 없습니다. </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

@@ -20,7 +20,7 @@
         </div>
       </a>
       <div class="card-footer">
-        <a href="#" class="card-link">{{ article.creator.username }}</a>
+        <a href="{% url 'accounts:profile' article.creator.username %}" class="card-link">{{ article.creator.username }}</a>
         <a href="{% url 'community:like' article.pk %}" class="card-link">
           {% if request.user in article.like_users.all %}
           좋아요 취소
