@@ -21,7 +21,6 @@ detail
     </div>
     </div>
   <hr>
-  {% comment %} 좋아요 {% endcomment %}
 
   <p class="mb-5">{{ article.content }}</p>
 
@@ -35,8 +34,10 @@ detail
   <p class="small my-0 text-right text-secondary">{{ article.created_at }} (created)</p>
   <div class="w-100 d-flex justify-content-between mt-3">
     <a class="btn btn-secondary w-25" href="{% url 'community:index' %}">Back</a>
-    <a class="btn btn-primary w-25" href="#">Edit</a>
+    {% if request.user == article.creator %}
+    <a class="btn btn-primary w-25" href="{% url 'community:edit' article.pk %}">Edit</a>
     <button type="button" class="btn btn-danger w-25" data-toggle="modal" data-target="#staticBackdrop">Delete</button>
+    {% endif %}
   </div>
 
   <!-- Modal -->

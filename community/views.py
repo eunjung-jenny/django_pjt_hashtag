@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Article, Comment, Hashtag
-from .forms import ArticleForm, CommentForm, HashtagForm
+from .forms import ArticleForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
@@ -15,14 +15,13 @@ def index(request):
 @login_required
 def post(request):
     if request.method == 'POST':
-        article_form = ArticleForm(request.POST)
-        hashtag_form = HashtagForm(request.POST)
-        if article_form.is_valid() and hashtag_form.is_valid():
-            article = article_form.save(commit=False)
+        form = ArticleForm(request.POST)
+        if form.is_valid():
+            article = form.save(commit=False)
             article.creator = request.user
             article.save()
             
-            hashtags = request.POST['tag'].split('#')[1:]
+            hashtags = request.POST['hashtags'].split('#')[1:]
             for hashtag in hashtags:
                 h = Hashtag()
                 h.tag = hashtag
@@ -35,13 +34,11 @@ def post(request):
         else:
             messages.error(request, '글 작성에 실패하였습니다.')
     else:
-        article_form = ArticleForm()
-        hashtag_form = HashtagForm()
+        form = ArticleForm()
     context = {
-        'article_form': article_form,
-        'hashtag_form': hashtag_form
+        'form': form,
     }    
-    return render(request, 'community/post.html', context)
+    return render(request, 'community/form.html', context)
 
 @login_required
 def like(request, article_pk):
@@ -50,7 +47,7 @@ def like(request, article_pk):
         article.like_users.remove(request.user)    
     else:
         article.like_users.add(request.user)
-    return redirect('community:index')
+    return redirect('community:detail', article_pk)
 
 @login_required
 def detail(request, article_pk):
@@ -59,3 +56,41 @@ def detail(request, article_pk):
         'article': article,
     }
     return render(request, 'community/detail.html', context)
+
+@login_required
+def edit(request, article_pk):
+    article = get_object_or_404(Article, pk=article_pk)
+    if request.user == article.creator:
+        if request.method == 'POST':
+            form = ArticleForm(request.POST, instance=article)
+            if form.is_valid():
+                for hashtag in article.has_hashtags.all():
+                    hashtag.delete()
+
+                article = form.save(commit=False)
+                article.creator = request.user
+                article.save()
+
+                hashtags = request.POST['hashtags'].split('#')[1:]
+                for hashtag in hashtags:
+                    h = Hashtag()
+                    h.tag = hashtag
+                    h.save()
+                    h.has_articles.add(article)
+                messages.success(request, '글을 성공적으로 수정하였습니다.')
+                return redirect('community:detail', article_pk) 
+            else:
+                messages.error(request, '글 수정에 실패하였습니다.')
+        else:
+            form = ArticleForm(instance=article)
+            hashtags = ''
+            for hashtag in article.has_hashtags.all():
+                hashtags += f'#{hashtag.tag}'
+        context = {
+            'form': form,
+            'hashtags': hashtags
+        }    
+        return render(request, 'community/form.html', context)
+    else:
+        messages.error(request, '수정 권한이 없습니다.')   
+        return redirect('community:detail', article_pk)
