@@ -22,7 +22,9 @@
         {% endif %}
     {% endif %}
     <div class="my-4">
-        게시글 {{ person.articles.count }} 팔로워 {{ person.followers.count }} 팔로우 {{ person.follows.count }}
+        <span>게시글 {{ person.articles.count }}</span>
+        <span data-toggle="modal" data-target="#followersModal" style="cursor:pointer;">팔로워 {{ person.followers.count }}</span>
+        <span data-toggle="modal" data-target="#followsModal" style="cursor:pointer;"> 팔로우 {{ person.follows.count }}</span>
     </div>
 </div>
 <hr>
@@ -100,6 +102,58 @@
         <div> 아직 좋아요한 글이 없습니다. </div>
         {% endfor %}
     </div>
+</div>
+
+<!-- followersModal -->
+<div class="modal fade" id="followersModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">{{ person.username }}님을 팔로잉하는 사람</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <ul>
+          {% for follower in person.followers.all %}
+          <li>{{ follower.username }}</li>
+          {% empty %}
+            <li>아직 팔로워가 없습니다.</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- followsModal -->
+<div class="modal fade" id="followsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">{{ person.username }}님이 팔로우하는 사람</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <ul>
+          {% for follow in person.follows.all %}
+          <li>{{ follow.username }}</li>
+          {% empty %}
+        <li>아직 팔로우하는 사람이 없습니다.</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 {% endblock %}

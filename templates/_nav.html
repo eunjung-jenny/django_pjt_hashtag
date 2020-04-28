@@ -19,7 +19,7 @@
             {{ request.user.username }}
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="{% url 'accounts:profile' request.user.pk %}">Profile</a>
+              <a class="dropdown-item" href="{% url 'accounts:profile' request.user.username %}">Profile</a>
               {% comment %} <a class="dropdown-item" href="#">Favorites</a> {% endcomment %}
               <a class="dropdown-item" href="{% url 'accounts:settings' %}">Settings</a>
               <a class="dropdown-item" href="{% url 'accounts:logout'%}">Sign Out</a>
