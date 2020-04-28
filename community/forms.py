@@ -1,17 +1,17 @@
 from django import forms
 from .models import Article, Comment, Hashtag
 
-class ArticleForm(models.ModelForm):
+class ArticleForm(forms.ModelForm):
     class Meta:
         model = Article
         fields = ['title', 'content']
 
-class CommentForm(models.ModelForm):
+class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ['content']
 
-class HaghtagForm(models.ModelForm):
+class HaghtagForm(forms.ModelForm):
     class Meta:
-        model = Haghtag
+        model = Hashtag
         fields = ['tag']
