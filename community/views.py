@@ -94,3 +94,9 @@ def edit(request, article_pk):
     else:
         messages.error(request, '수정 권한이 없습니다.')   
         return redirect('community:detail', article_pk)
+
+def delete(request, article_pk):
+    article = get_object_or_404(Article, pk=article_pk)
+    if request.method == 'POST' and request.user.is_authenticated and request.user == article.creator:
+        article.delete()
+    return redirect('community:index')
