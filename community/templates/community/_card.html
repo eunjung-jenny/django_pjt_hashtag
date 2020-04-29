@@ -22,7 +22,7 @@
         class="card-link"
         >{{ article.creator.username }}</a
       >
-      <button type="button" class="btn btn-sm btn-light border border-danger" data-toggle="modal" data-target="#likeModal">
+      <button type="button" class="btn btn-sm btn-light border border-danger" data-toggle="modal" data-target="#likeModal_{{ article.pk }}">
         <i class="fas fa-heart"></i><span class="badge badge-light">{{ article.like_users.count }}</span>
       </button>
       {% comment %} <span>
@@ -34,7 +34,7 @@
 </div>
 
 <!-- LikeModal -->
-<div class="modal fade" id="likeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="likeModal_{{ article.pk }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
