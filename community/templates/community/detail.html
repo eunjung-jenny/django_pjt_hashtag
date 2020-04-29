@@ -1,32 +1,37 @@
 {% extends 'base.html' %}
-{% load bootstrap4 %}
+{% load bootstrap4 static %}
 
 {% block title %}
 detail    
 {% endblock %}
 
+{% block css %}
+    <link rel="stylesheet" href="{% static 'community/stylesheets/detail.css' %}"/>
+    <link rel="stylesheet" href="{% static 'stylesheets/modal.css' %}"/>
+{% endblock %}
 
 {% block body %}
-  <div class="d-flex justify-content-between mb-3">
-    <h3>{{ article.title }} <small>| by. {{ article.creator.username }}</small></h3>
-    <div>
-        <span data-toggle="modal" data-target="#likeModal" style="cursor:pointer;">{{ article.like_users.count }} 명이 좋아합니다.</span>
-        <a href="{% url 'community:like' article.pk %}" class="card-link btn btn-sm btn-danger">
-          {% if request.user in article.like_users.all %}
-          좋아요 취소
-          {% else %}
-          좋아요
-          {% endif %}
-        </a>
+<article>
+  <div class="d-flex justify-content-between mb-3 header">
+    <h3>{{ article.title }} <small>| <a class="badge badge-pill badge-primary" href="{% url 'accounts:profile' article.creator.username %}">{{ article.creator.username }}</a></small></h3>
+    <div class="like-wrapper">
+      <button type="button" class="btn btn-sm btn-light border border-danger" data-toggle="modal" data-target="#likeModal">
+        <i class="fas fa-heart"></i><span class="badge badge-light">{{ article.like_users.count }}</span>
+      </button>
+      {% if request.user in article.like_users.all %}
+        <a href="{% url 'community:like' article.pk %}" class="card-link btn btn-sm btn-secondary like-btn">좋아요 취소</a>
+      {% else %}
+        <a href="{% url 'community:like' article.pk %}" class="card-link btn btn-sm btn-danger like-btn">좋아요</a>
+      {% endif %}
     </div>
-    </div>
+  </div>
   <hr>
 
   <p class="mb-5">{{ article.content }}</p>
 
-  <ul>
+  <ul class="tag-list">
     {% for hashtag in article.has_hashtags.all %}
-    <li>{{ hashtag }}</li>
+    <li class="tag badge badge-pill badge-info">{{ hashtag }}</li>
     {% endfor %}
   </ul>
 
@@ -39,6 +44,7 @@ detail
     <button type="button" class="btn btn-danger w-25" data-toggle="modal" data-target="#staticBackdrop">Delete</button>
     {% endif %}
   </div>
+</article>
 
 <!-- LikeModal -->
 <div class="modal fade" id="likeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -53,13 +59,14 @@ detail
       <div class="modal-body">
         <ul>
           {% for liker in article.like_users.all %}
-          <li>{{ liker.username }}</li>
+          <li class="liker badge badge-pill badge-info ">{{ liker.username }}</li>
+          {% empty %}
+          아직 이 글을 좋아하는 사람이 없습니다.
           {% endfor %}
         </ul>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
       </div>
     </div>
   </div>
@@ -76,7 +83,7 @@ detail
           삭제하시겠습니까?
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary py-1" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-secondary py-1" data-dismiss="modal">Cancel</button>
           <form action="{% url 'community:delete' article.pk %}" method="POST">
             {% csrf_token %}
             <button type="submit" class="btn btn-danger py-1">Delete</button>

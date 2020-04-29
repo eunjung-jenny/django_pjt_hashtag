@@ -1,0 +1,10 @@
+.modal .modal-body ul {
+  padding: 0;
+  margin-bottom: 0;
+}
+
+.modal .liker,
+.modal .follow,
+.modal .follower {
+  font-size: 18px;
+}

@@ -1,19 +1,24 @@
 {% extends 'base.html' %}
-{% load bootstrap4 humanize %}
+{% load bootstrap4 static humanize %}
 
 {% block title %}
     {{ person.username }}
 {% endblock %}
 
+{% block css %}
+  <link rel="stylesheet" href="{% static 'community/stylesheets/card.css' %}"/>
+  <link rel="stylesheet" href="{% static 'stylesheets/profile.css' %}"/>
+  <link rel="stylesheet" href="{% static 'stylesheets/modal.css' %}"/>
+{% endblock %}
+
+
 {% block body %}
+<div class="header">
     {% if request.user == person %}
     <h3> 나의 프로필</h3>
     {% else %}
     <h3>{{ person.username }}님의 프로필</h3>
     {% endif %}
-<hr>
-
-<div>
     {% if request.user != person %}
         {% if request.user in person.followers.all %}
             <a href="{% url 'accounts:follow' person.username %}"><button class="btn btn-secondary">팔로우 취소</button></a>
@@ -21,45 +26,29 @@
             <a href="{% url 'accounts:follow' person.username %}"><button class="btn btn-primary">팔로우</button></a>
         {% endif %}
     {% endif %}
-    <div class="my-4">
-        <span>게시글 {{ person.articles.count }}</span>
-        <span data-toggle="modal" data-target="#followersModal" style="cursor:pointer;">팔로워 {{ person.followers.count }}</span>
-        <span data-toggle="modal" data-target="#followsModal" style="cursor:pointer;"> 팔로우 {{ person.follows.count }}</span>
-    </div>
+  </div>
+<hr>
+
+<div class="follow-info">
+  <button type="button" class="btn btn-info" data-toggle="modal" data-target="#followersModal">
+  팔로워 <span class="badge badge-light">{{ person.followers.count }}</span>
+  </button>
+  <button type="button" class="btn btn-info" data-toggle="modal" data-target="#followsModal">
+  팔로우 <span class="badge badge-light">{{ person.follows.count }}</span>
+  </button>
 </div>
 <hr>
 
-<div>
+<div class="user-create">
     {% if request.user == person %}
-    <h4>내가 작성한 글</h4>
+    <h4>내가 작성한 글 | {{ person.articles.count }} 개</h4>
     {% else %}
-    <h4>{{ person.username }}님이 작성한 글</h4>
+    <h4>{{ person.username }}님이 작성한 글 <small>({{ person.articles.count }} 개)</small></h4>
     {% endif %}
 
     <div class="row row-cols-1 row-cols-md-3">
         {% for article in person.articles.all %}
-        <div class="col mb-4">
-            <div class="card" style="width: 18rem;">
-                <a href="#">
-                    <div class="card-body">
-                    <h5 class="card-title">{{ article.title|slice:":23" }}...</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">{{ article.updated_at|naturaltime }}</h6>
-                    <p class="card-text">{{ article.content|slice:":100" }}...</p>
-                    </div>
-                </a>
-                <div class="card-footer">
-                    <a href="{% url 'accounts:profile' article.creator.username %}" class="card-link">{{ article.creator.username }}</a>
-                    <a href="{% url 'community:like' article.pk %}" class="card-link">
-                    {% if request.user in article.like_users.all %}
-                    좋아요 취소
-                    {% else %}
-                    좋아요
-                    {% endif %}
-                    </a>
-                    <small>{{ article.like_users.count }} 명이 좋아합니다.</small>
-                </div>
-            </div>
-        </div>
+          {% include 'community/_card.html' %}
         {% empty %}
         <div> 아직 작성한 글이 없습니다. </div>
         {% endfor %}
@@ -67,39 +56,18 @@
 </div>
 <hr>
 
-<div>
+<div class="user-like">
     {% if request.user == person %}
-    <h4>내가 좋아요한 글</h4>
+    <h4>내가 좋아요한 글 | {{ person.like_articles.count }} 개</h4>
     {% else %}
-    <h4>{{ person.username }}님이 좋아요한 글</h4>
+    <h4>{{ person.username }}님이 좋아요한 글 | {{ person.like_articles.count }} 개</h4>
     {% endif %}
 
     <div class="row row-cols-1 row-cols-md-3">
         {% for article in person.like_articles.all %}
-        <div class="col mb-4">
-            <div class="card" style="width: 18rem;">
-                <a href="#">
-                    <div class="card-body">
-                    <h5 class="card-title">{{ article.title|slice:":23" }}...</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">{{ article.updated_at|naturaltime }}</h6>
-                    <p class="card-text">{{ article.content|slice:":100" }}...</p>
-                    </div>
-                </a>
-                <div class="card-footer">
-                    <a href="{% url 'accounts:profile' article.creator.username %}" class="card-link">{{ article.creator.username }}</a>
-                    <a href="{% url 'community:like' article.pk %}" class="card-link">
-                    {% if request.user in article.like_users.all %}
-                    좋아요 취소
-                    {% else %}
-                    좋아요
-                    {% endif %}
-                    </a>
-                    <small>{{ article.like_users.count }} 명이 좋아합니다.</small>
-                </div>
-            </div>
-        </div>
+          {% include 'community/_card.html' %}
         {% empty %}
-        <div> 아직 좋아요한 글이 없습니다. </div>
+        <div class="col"> 아직 좋아요한 글이 없습니다. </div>
         {% endfor %}
     </div>
 </div>
@@ -117,9 +85,9 @@
       <div class="modal-body">
         <ul>
           {% for follower in person.followers.all %}
-          <li>{{ follower.username }}</li>
+          <li class="follower badge badge-pill badge-info ">{{ follower.username }}</li>
           {% empty %}
-            <li>아직 팔로워가 없습니다.</li>
+          아직 팔로워가 없습니다.
           {% endfor %}
         </ul>
       </div>
@@ -143,9 +111,9 @@
       <div class="modal-body">
         <ul>
           {% for follow in person.follows.all %}
-          <li>{{ follow.username }}</li>
+          <li class="follow badge badge-pill badge-info ">{{ follow.username }}</li>
           {% empty %}
-        <li>아직 팔로우하는 사람이 없습니다.</li>
+          아직 팔로우하는 사람이 없습니다.
           {% endfor %}
         </ul>
       </div>

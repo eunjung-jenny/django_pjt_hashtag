@@ -1,0 +1,12 @@
+.header {
+  display: flex;
+}
+
+.header h3 {
+  margin-right: 15px;
+}
+
+.user-create h4,
+.user-like h4 {
+  margin-bottom: 15px;
+}

@@ -1,0 +1,26 @@
+article .header {
+  display: flex;
+  align-items: center;
+}
+
+article .like-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+article i {
+  color: red;
+  padding-right: 5px;
+}
+
+article .like-btn {
+  margin-left: 5px;
+}
+
+article .tag-list {
+  padding: 0;
+}
+
+article .tag {
+  font-size: 14px;
+}
