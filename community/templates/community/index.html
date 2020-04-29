@@ -13,6 +13,13 @@
 
 {% block body %}
 
+{% if request.resolver_match.url_name == 'search' %}
+<h3>
+    '{{ term }}' 검색 결과:
+</h3>
+{% endif %}
+<hr>
+
 <div class="row row-cols-1 row-cols-md-3">
   {% for article in articles %}
     {% include 'community/_card.html' %}

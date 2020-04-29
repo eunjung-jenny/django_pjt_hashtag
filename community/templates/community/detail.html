@@ -31,7 +31,7 @@ detail
 
   <ul class="tag-list">
     {% for hashtag in article.has_hashtags.all %}
-    <li class="tag badge badge-pill badge-info">{{ hashtag }}</li>
+    <li class="tag badge badge-pill badge-info"><a class="text-white" href={{ "/community/search?term="|add:hashtag.tag }} >{{ hashtag.tag }}</a></li>
     {% endfor %}
   </ul>
 

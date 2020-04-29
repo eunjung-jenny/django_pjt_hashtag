@@ -7,8 +7,10 @@ from django.contrib import messages
 # Create your views here.
 def index(request):
     articles = Article.objects.all()
+    term = None
     context = {
-        'articles': articles
+        'articles': articles,
+        'term': term
     }
     return render(request, 'community/index.html', context)
 
@@ -114,6 +116,7 @@ def search(request):
     else:
         articles = []
     context = {
-        'articles': articles
+        'articles': articles,
+        'term': term,
     }
     return render(request, 'community/index.html', context)
