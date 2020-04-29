@@ -25,12 +25,14 @@ def post(request):
             
             hashtags = request.POST['hashtags'].split('#')[1:]
             for hashtag in hashtags:
-                h = Hashtag()
-                h.tag = hashtag.strip()
-                h.save()
-            
-                h.has_articles.add(article)
+                if not Hashtag.objects.filter(tag=hashtag).exists():
+                    h = Hashtag()
+                    h.tag = hashtag.strip()
+                    h.save()
+                else:
+                    h = Hashtag.objects.get(tag=hashtag)
                 
+                h.has_articles.add(article)
             messages.success(request, '글을 성공적으로 게시하였습니다.')
             return redirect('community:index')
         else:
