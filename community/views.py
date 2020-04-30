@@ -1,8 +1,10 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, resolve_url
 from .models import Article, Comment, Hashtag
 from .forms import ArticleForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+
+BASE_URL = 'http://127.0.0.1:8000'
 
 # Create your views here.
 def index(request):
@@ -47,11 +49,29 @@ def post(request):
 @login_required
 def like(request, article_pk):
     article = get_object_or_404(Article, pk=article_pk)
-    if request.user in article.like_users.all():
-        article.like_users.remove(request.user)    
+    if request.META.get('HTTP_REFERER'):
+        previous_url = request.META.get('HTTP_REFERER')
+
+        # 로그인 페이지에서 넘어오는 경우, 좋아요 카운팅 하지 않고 디테일 페이지 보여줌
+        if previous_url != BASE_URL + resolve_url('community:index') and previous_url != BASE_URL + resolve_url('community:detail', article_pk):
+            return redirect('community:detail', article_pk)
+
+        if request.user in article.like_users.all():
+            article.like_users.remove(request.user)
+            messages.warning(request, '좋아요를 취소하였습니다.')    
+        else:
+            article.like_users.add(request.user)
+            messages.success(request, '좋아요를 눌렀습니다.')
+        
+        if previous_url == BASE_URL + resolve_url('community:index'):
+            return redirect('community:index')
+        elif previous_url == BASE_URL + resolve_url('community:detail', article_pk):
+            return redirect('community:detail', article_pk)            
+
+    # 외부 페이지에서 넘어오는 경우
     else:
-        article.like_users.add(request.user)
-    return redirect('community:detail', article_pk)
+        return redirect('community:detail', article_pk)
+
 
 @login_required
 def detail(request, article_pk):

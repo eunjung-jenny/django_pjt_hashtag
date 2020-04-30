@@ -1,6 +1,6 @@
 {% load humanize %}
 
-<div class="col mb-4">
+<div class="col col-md-6 col-lg-4 mb-4">
   <div class="card" style="width: 18rem;">
     <a href="{% url 'community:detail' article.pk %}">
       <div class="card-body">
@@ -22,13 +22,18 @@
         class="card-link"
         >{{ article.creator.username }}</a
       >
-      <button type="button" class="btn btn-sm btn-light border border-danger" data-toggle="modal" data-target="#likeModal_{{ article.pk }}">
-        <i class="fas fa-heart"></i><span class="badge badge-light">{{ article.like_users.count }}</span>
-      </button>
-      {% comment %} <span>
-        <i class="fas fa-heart "></i>
-        {{ article.like_users.count }} 명이 좋아합니다.
-      </span> {% endcomment %}
+      <div>
+        <button type="button" class="btn btn-sm btn-light border border-danger" data-toggle="modal" data-target="#likeModal_{{ article.pk }}">
+          <i class="fas fa-heart"></i><span class="badge badge-light">{{ article.like_users.count }}</span>
+        </button>
+        {% if request.user.is_authenticated %}
+          {% if request.user in article.like_users.all %}
+            <a href="{% url 'community:like' article.pk %}" class="card-link btn btn-sm btn-secondary like-btn">좋아요 취소</a>
+          {% else %}
+            <a href="{% url 'community:like' article.pk %}" class="card-link btn btn-sm btn-danger like-btn">좋아요</a>
+          {% endif %}
+        {% endif %}
+      </div>
     </div>
   </div>
 </div>

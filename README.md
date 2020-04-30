@@ -98,3 +98,18 @@
 ### 3) 스타일링
 
 - [x]
+
+### 4) 노트
+
+- index 페이지에서 좋아요 를 눌렀을 때와 detail 페이지에서 좋아요 를 눌렀을 때 redirect 페이지를 다르게 주고 싶다.
+
+  - `request.META.get('HTTP_REFERER')` 에서 직전 url 을 문자열 타입으로 받을 수 있음 / 외부 사이트에서 넘어온 경우에는 None 값 반환
+  - ` resolve_url('community:index')``request.resolver_match.url_name ` 과 반대되는 기능
+
+    - `from django.shortcuts import resolve_url`
+
+  - 직전 url 과 urlpatterns 에 정의된 url명을 비교하여 같은 기능을 수행한 뒤 다른 페이지로 리다이렉션 가능
+
+  - challenge) 외부에서 넘어오는 경우, 직전 url 을 받아올 수 없으므로 에러 발생 => None 값일 경우, index 또는 detail 페이지로 분기시켜 줄 필요가 있음
+
+  - challenge) login 되어 있지 않은 경우, 로그인 페이지로 넘어갔다가 해당 url 로 다시 접근하게 되는데 이 경우 직전 url 이 'accounts:login' 에 해당함 => index 또는 detail 페이지로 분기시켜 줄 필요가 있으며, 좋아요 카운팅을 해 줄 것인지에 대해 고려해야 함
