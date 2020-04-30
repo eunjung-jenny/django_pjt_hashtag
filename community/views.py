@@ -3,6 +3,7 @@ from .models import Article, Comment, Hashtag
 from .forms import ArticleForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.views.decorators.http import require_POST
 
 BASE_URL = 'http://127.0.0.1:8000'
 
@@ -76,8 +77,10 @@ def like(request, article_pk):
 @login_required
 def detail(request, article_pk):
     article = get_object_or_404(Article, pk=article_pk)
+    comment_form = CommentForm()
     context = {
         'article': article,
+        'comment_form': comment_form,
     }
     return render(request, 'community/detail.html', context)
 
@@ -142,3 +145,20 @@ def search(request):
         'term': term,
     }
     return render(request, 'community/index.html', context)
+
+@login_required
+@require_POST
+def comment_create(request, article_pk):
+    article = get_object_or_404(Article, pk=article_pk)
+    form = CommentForm(request.POST)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.creator = request.user
+        comment.article = article
+        comment.save()
+        messages.success(request, '댓글을 성공적으로 작성하였습니다.')
+    else:
+        messages.error(request, '댓글 작성에 실패하였습니다.')
+    return redirect('community:detail', article_pk)
+
+

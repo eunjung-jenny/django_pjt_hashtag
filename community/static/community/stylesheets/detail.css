@@ -24,3 +24,35 @@ article .tag-list {
 article .tag {
   font-size: 14px;
 }
+
+.form-group {
+  width: calc(100% - 85px);
+  display: inline-block;
+  margin-bottom: 0 !important;
+}
+
+section form {
+  display: flex;
+}
+
+.form-group input {
+  border: none;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+  height: 32px;
+}
+
+.form-group input:focus {
+  box-shadow: none !important;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+section button {
+  width: 75px;
+  margin-left: 10px;
+}
+
+section .comments-list {
+  list-style: none;
+  padding: 0;
+}

@@ -11,7 +11,7 @@ detail
 {% endblock %}
 
 {% block body %}
-<article>
+<article class="mb-4">
   <div class="d-flex justify-content-between mb-3 header">
     <h3>{{ article.title }} <small>| <a class="badge badge-pill badge-primary" href="{% url 'accounts:profile' article.creator.username %}">{{ article.creator.username }}</a></small></h3>
     <div class="like-wrapper">
@@ -45,6 +45,33 @@ detail
     {% endif %}
   </div>
 </article>
+<section>
+  <form method="POST" action="{% url 'community:comment_create' article.pk %}">
+    {% csrf_token %}
+    {% bootstrap_form comment_form %}
+    <div class="buttons">
+      <button class="btn btn-sm btn-primary">
+          댓글 작성
+      </button>
+    </div>
+  </form>
+  <ul class="comments-list mt-4">
+  {% for comment in article.comments.all %}
+    <li class="comment d-flex justify-content-between mb-1">
+      <div>
+        <span class="comment__content">{{ comment.content }}</span>
+        <a href="{% url 'accounts:profile' comment.creator.username %}"><small class="comment__creator ml-2">{{ comment.creator.username }}</small></a>
+      </div>
+      <div>
+        <small class="text-right text-secondary text-right">{{ comment.created_at }}</small>
+      </div>
+    </li>
+  {% empty %}
+    <li>아직 댓글이 없습니다.</li>
+  {% endfor %}
+  </ul>
+  </div>
+</section>
 
 <!-- LikeModal -->
 <div class="modal fade" id="likeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
