@@ -50,7 +50,7 @@
         {% for article in person.articles.all %}
           {% include 'community/_card.html' %}
         {% empty %}
-        <div> 아직 작성한 글이 없습니다. </div>
+        <div class="col"> 아직 작성한 글이 없습니다. </div>
         {% endfor %}
     </div>
 </div>

@@ -178,3 +178,28 @@ def child_comment_create(request, article_pk, comment_pk):
     else:
         messages.error(request, '댓글 작성에 실패하였습니다.')
     return redirect('community:detail', article_pk)
+
+@login_required
+def comment_delete(request, article_pk, comment_pk):
+    comment = get_object_or_404(Comment, pk=comment_pk)
+    if request.user == comment.creator:
+        if not comment.child_comments.all():
+            comment.delete()
+            messages.success(request, '댓글을 삭제하였습니다.')
+        else:
+            messages.warning(request, '대댓글이 있는 댓글은 삭제할 수 없습니다.')
+    else:
+        messages.error(request, '댓글 삭제 권한이 없습니다.')
+    return redirect('community:detail', article_pk)
+
+@login_required
+def child_comment_delete(request, article_pk, child_comment_pk):
+    child_comment = get_object_or_404(ChildComment, pk=child_comment_pk)
+    print(request.user.username)
+    print(child_comment.creator.username)
+    if request.user == child_comment.creator:
+        child_comment.delete()
+        messages.success(request, '댓글을 삭제하였습니다.')
+    else:
+        messages.error(request, '댓글 삭제 권한이 없습니다.')
+    return redirect('community:detail', article_pk)
