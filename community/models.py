@@ -23,6 +23,16 @@ class Comment(models.Model):
     def __str__(self):
         return f'{self.content}'
 
+class ChildComment(models.Model):
+    content = models.CharField(max_length=100)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,null=True, related_name='child_comments')
+    parent_comment = models.ForeignKey(Comment, on_delete=models.PROTECT, related_name='child_comments')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.content}'
+
 class Hashtag(models.Model):
     tag = models.CharField(max_length=15)
     has_articles = models.ManyToManyField(Article, related_name='has_hashtags', blank=True)

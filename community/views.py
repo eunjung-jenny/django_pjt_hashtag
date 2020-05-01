@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404, resolve_url
-from .models import Article, Comment, Hashtag
-from .forms import ArticleForm, CommentForm
+from .models import Article, Comment, ChildComment, Hashtag
+from .forms import ArticleForm, CommentForm, ChildCommentForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.decorators.http import require_POST
@@ -78,9 +78,11 @@ def like(request, article_pk):
 def detail(request, article_pk):
     article = get_object_or_404(Article, pk=article_pk)
     comment_form = CommentForm()
+    child_comment_form = ChildCommentForm()
     context = {
         'article': article,
         'comment_form': comment_form,
+        'child_comment_form': child_comment_form,
     }
     return render(request, 'community/detail.html', context)
 
@@ -161,4 +163,18 @@ def comment_create(request, article_pk):
         messages.error(request, '댓글 작성에 실패하였습니다.')
     return redirect('community:detail', article_pk)
 
-
+@login_required
+@require_POST
+def child_comment_create(request, article_pk, comment_pk):
+    article = get_object_or_404(Article, pk=article_pk)
+    comment = get_object_or_404(Comment, pk=comment_pk)
+    form = ChildCommentForm(request.POST)
+    if form.is_valid():
+        child_comment = form.save(commit=False)
+        child_comment.creator = request.user
+        child_comment.parent_comment = comment
+        child_comment.save()
+        messages.success(request, '대댓글을 성공적으로 작성하였습니다.')
+    else:
+        messages.error(request, '댓글 작성에 실패하였습니다.')
+    return redirect('community:detail', article_pk)
