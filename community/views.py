@@ -5,8 +5,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 
-BASE_URL = 'http://127.0.0.1:8000'
-
 # Create your views here.
 def index(request):
     articles = Article.objects.all()
@@ -50,9 +48,11 @@ def post(request):
 @login_required
 def like(request, article_pk):
     article = get_object_or_404(Article, pk=article_pk)
+    BASE_URL = 'http://127.0.0.1:8000' if 'heroku' not in request.get_host() else 'https://secure-bayou-79410.herokuapp.com'
+    
     if request.META.get('HTTP_REFERER'):
         previous_url = request.META.get('HTTP_REFERER')
-
+        
         # 로그인 페이지에서 넘어오는 경우, 좋아요 카운팅 하지 않고 디테일 페이지 보여줌
         if previous_url != BASE_URL + resolve_url('community:index') and previous_url != BASE_URL + resolve_url('community:detail', article_pk):
             return redirect('community:detail', article_pk)
