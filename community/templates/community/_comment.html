@@ -2,6 +2,7 @@
 
 <ul class="comments-list mt-4">
 {% for comment in article.comments.all %}
+  {% if not comment.parent_comment %}
   <li class="comment mb-3">
     <div class="d-flex justify-content-between">
       <div>
@@ -30,6 +31,7 @@
     {% endif %}
 
   </li>
+  {% endif %}
 {% empty %}
   <li>아직 댓글이 없습니다.</li>
 {% endfor %}
