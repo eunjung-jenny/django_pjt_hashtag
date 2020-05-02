@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404, resolve_url
-from .models import Article, Comment, ChildComment, Hashtag
-from .forms import ArticleForm, CommentForm, ChildCommentForm
+from .models import Article, Comment, Hashtag
+from .forms import ArticleForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.decorators.http import require_POST
@@ -78,7 +78,7 @@ def like(request, article_pk):
 def detail(request, article_pk):
     article = get_object_or_404(Article, pk=article_pk)
     comment_form = CommentForm()
-    child_comment_form = ChildCommentForm()
+    child_comment_form = CommentForm()
     context = {
         'article': article,
         'comment_form': comment_form,
@@ -168,10 +168,11 @@ def comment_create(request, article_pk):
 def child_comment_create(request, article_pk, comment_pk):
     article = get_object_or_404(Article, pk=article_pk)
     comment = get_object_or_404(Comment, pk=comment_pk)
-    form = ChildCommentForm(request.POST)
+    form = CommentForm(request.POST)
     if form.is_valid():
         child_comment = form.save(commit=False)
         child_comment.creator = request.user
+        child_comment.article = article
         child_comment.parent_comment = comment
         child_comment.save()
         messages.success(request, '대댓글을 성공적으로 작성하였습니다.')
@@ -194,9 +195,7 @@ def comment_delete(request, article_pk, comment_pk):
 
 @login_required
 def child_comment_delete(request, article_pk, child_comment_pk):
-    child_comment = get_object_or_404(ChildComment, pk=child_comment_pk)
-    print(request.user.username)
-    print(child_comment.creator.username)
+    child_comment = get_object_or_404(Comment, pk=child_comment_pk)
     if request.user == child_comment.creator:
         child_comment.delete()
         messages.success(request, '댓글을 삭제하였습니다.')
