@@ -49,7 +49,22 @@ detail
     {% endif %}
   </div>
 </article>
-{% include 'community/_comment.html' %}
+
+<section>
+  <form class="js-comment-form" method="POST" action="{% url 'community:comment_create' article.pk %}">
+    {% csrf_token %}
+    {% bootstrap_form comment_form %}
+    <button class="btn btn-sm btn-primary">
+        댓글 작성
+    </button>
+  </form>
+
+  {% if article.comments.all %}
+    {% include 'community/_comment.html' %}
+  {% endif %}
+</section>
+
+
 <!-- LikeModal -->
 <div class="modal fade" id="likeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">

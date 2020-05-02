@@ -1,61 +1,36 @@
 {% load bootstrap4 %}
 
-<section>
-  <form class="js-comment-form" method="POST" action="{% url 'community:comment_create' article.pk %}">
-    {% csrf_token %}
-    {% bootstrap_form comment_form %}
-    <button class="btn btn-sm btn-primary">
-        댓글 작성
-    </button>
-  </form>
-  <ul class="comments-list mt-4">
-  {% for comment in article.comments.all %}
-    <li class="comment mb-3">
-        <div class="d-flex justify-content-between">
-            <div>
-                <a href="{% url 'accounts:profile' comment.creator.username %}"><small class="comment__creator ml-2">{{ comment.creator.username }}</small></a>
-                <span class="comment__content">{{ comment.content }}</span>
-                <span class="js-add-child-comment text-secondary">답글달기</span>
-                {% if request.user == comment.creator %}
-                <a href="{% url 'community:comment_delete' article.pk comment.pk %}" class="text-secondary">삭제하기</a>
-                {% endif %}
-            </div>
-            <div>
-                <small class="text-right text-secondary text-right">{{ comment.created_at }}</small>
-            </div>
-        </div>
+<ul class="comments-list mt-4">
+{% for comment in article.comments.all %}
+  <li class="comment mb-3">
+    <div class="d-flex justify-content-between">
+      <div>
+        <a href="{% url 'accounts:profile' comment.creator.username %}"><small class="comment__creator ml-2">{{ comment.creator.username }}</small></a>
+        <span class="comment__content">{{ comment.content }}</span>
+        <span class="js-add-child-comment text-secondary">답글달기</span>
+        {% if request.user == comment.creator %}
+        <a href="{% url 'community:comment_delete' article.pk comment.pk %}" class="text-secondary">삭제하기</a>
+        {% endif %}
+      </div>
+      <div>
+          <small class="text-right text-secondary text-right">{{ comment.created_at }}</small>
+      </div>
+    </div>
 
-        <!-- 대댓글 -->
-        <form class="js-child-comment-form child-comment-form my-2" method="POST" action="{% url 'community:child_comment_create' article.pk comment.pk %}">
-            {% csrf_token %}
-            {% bootstrap_form child_comment_form %}
-            <button class="btn btn-sm btn-secondary">
-                댓글 작성
-            </button>
-        </form>
-        <ul class="comments-list child-comments-list mt-2">
-          {% for child_comment in comment.child_comments.all %}
-          <li class="comment mb-1">
-            <div class="d-flex justify-content-between">
-              <div>
-                ⎿
-                <a href="{% url 'accounts:profile' child_comment.creator.username %}"><small class="comment__creator ml-2">{{ child_comment.creator.username }}</small></a>
-                <span class="comment__content">{{ child_comment.content }}</span>
-                {% if request.user == child_comment.creator %}
-                <a href="{% url 'community:child_comment_delete' article.pk child_comment.pk %}" class="text-secondary">삭제하기</a>
-                {% endif %}
-              </div>
-              <div>
-                <small class="text-right text-secondary text-right">{{ child_comment.created_at }}</small>
-              </div>
-            </div>
-          </li>
-          {% endfor %}
-        </ul>
-    </li>
-  {% empty %}
-    <li>아직 댓글이 없습니다.</li>
-  {% endfor %}
-  </ul>
-  </div>
-</section>
+    <form class="js-child-comment-form child-comment-form my-2" method="POST" action="{% url 'community:child_comment_create' article.pk comment.pk %}">
+      {% csrf_token %}
+      {% bootstrap_form child_comment_form %}
+      <button class="btn btn-sm btn-secondary">
+          댓글 작성
+      </button>
+    </form>
+
+    {% if comment.child_comments.all %}
+      {% include 'community/__child_comment.html'%}
+    {% endif %}
+
+  </li>
+{% empty %}
+  <li>아직 댓글이 없습니다.</li>
+{% endfor %}
+</ul>
