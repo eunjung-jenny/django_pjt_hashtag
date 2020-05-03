@@ -130,6 +130,8 @@
 
 - challenge) login 되어 있지 않은 경우, 로그인 페이지로 넘어갔다가 해당 url 로 다시 접근하게 되는데 이 경우 직전 url 이 'accounts:login' 에 해당함 => index 또는 detail 페이지로 분기시켜 줄 필요가 있으며, 좋아요 카운팅을 해 줄 것인지에 대해 고려해야 함
 
+- **배포시 host 가 달라지는 부분 고려해야 함**
+
 #### (2) 해로쿠 배포
 
 - [완숙의 에그머니 따라하기](https://egg-money.tistory.com/115)
@@ -141,3 +143,9 @@
   - 자기 자신을 참조할 때는 `models.ForeignKey("self", on_delete=[옵션])` 과 같이 "self" 옵션을 사용
 - 댓글이랑 모델을 합쳐주고 나니 대대대대댓글을 하기도 더 쉬워진 거 같다.
   - 모든 댓글 인스턴스에서 대댓글이 있는지 `child_comments` 로 조회할 수 있기 때문에 이를 활용해 대댓글이 있을 경우 django template language 의 `{% include '_comment.html' %}` 을 계속 이어붙여 주는 방식으로 구현이 가능할 거 같다. => 성공
+
+#### (4) Secret key 보안
+
+- 프라이빗으로 관리하던 레포를 퍼블릭 레포로 변경하게 되면서 과정에서 secret key 가 노출되었음
+- [Welcome to Django-environ’s documentation!](https://django-environ.readthedocs.io/en/latest/) 를 참고하여 secret key 를 변경하고 숨김파일로 관리하는데 성공
+- 실제 서비스를 운영 중인 웹/앱 이라면 1) 세션 정보 2) 토큰 3) 메세지 4) 댓글 (`django.contrib.comments` 사용시) 등의 기능에서 secret key 를 사용하기 때문에 변경 시점에 관련 정보들이 초기화되어 오류가 있을 수 있다.
