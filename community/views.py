@@ -4,10 +4,12 @@ from .forms import ArticleForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.decorators.http import require_POST
+from django.db.models import Count, Prefetch
+from django.contrib.auth import get_user_model
 
 # Create your views here.
 def index(request):
-    articles = Article.objects.all()
+    articles = Article.objects.select_related('creator').prefetch_related('like_users').annotate(like_users_count=Count('like_users')).order_by('-pk')
     term = None
     context = {
         'articles': articles,
