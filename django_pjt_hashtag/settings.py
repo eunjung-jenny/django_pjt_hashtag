@@ -48,9 +48,11 @@ INSTALLED_APPS = [
     'django_extensions',
     'accounts',
     'community',
+    'debug_toolbar'
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -151,3 +153,7 @@ MESSAGE_TAGS = {
 
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+]

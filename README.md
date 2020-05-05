@@ -89,6 +89,7 @@
   - [x] 조회
     - [] 팔로우 하는 사람의 글 우선 보여주기
     - [] 조회수
+    - [] 새로운 글 표시
   - [x] 작성
   - [x] 수정
   - [x] 삭제
@@ -102,14 +103,17 @@
   - [] 수정
   - [x] 대댓글
   - [x] 무한 댓글
+  - [] 새로운 댓글 있는지 표시
 - [x] 해시태그
   - [x] 작성
   - [x] 수정
   - [x] 검색
     - [x] 검색어와 정확히 일치하는 글 검색
     - [] 검색어를 포함하는 글 검색
+  - [] 태그 입력 방식 변경 (글 내에서 바로 추출)
 - [] 북마크
 - [] 이미지 업로드
+- [] 쿼리 최적화
 
 ### 3) 스타일링
 
@@ -149,3 +153,7 @@
 - 프라이빗으로 관리하던 레포를 퍼블릭 레포로 변경하게 되면서 과정에서 secret key 가 노출되었음
 - [Welcome to Django-environ’s documentation!](https://django-environ.readthedocs.io/en/latest/) 를 참고하여 secret key 를 변경하고 숨김파일로 관리하는데 성공
 - 실제 서비스를 운영 중인 웹/앱 이라면 1) 세션 정보 2) 토큰 3) 메세지 4) 댓글 (`django.contrib.comments` 사용시) 등의 기능에서 secret key 를 사용하기 때문에 변경 시점에 관련 정보들이 초기화되어 오류가 있을 수 있다.
+
+#### (5) Debug panel
+
+- [django-debug-toolbar](https://django-debug-toolbar.readthedocs.io/en/latest/installation.html)
