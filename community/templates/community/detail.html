@@ -12,6 +12,7 @@ detail
 
 {% block js %}
   <script src="{% static 'community/js/child_comment.js' %}"></script>
+  <script src="{% static 'community/js/like_detail.js' %}"></script>
 {% endblock %}
 
 {% block body %}
@@ -23,9 +24,9 @@ detail
         <i class="fas fa-heart"></i><span class="badge badge-light">{{ article.like_users.count }}</span>
       </button>
       {% if request.user in article.like_users.all %}
-        <a href="{% url 'community:like' article.pk %}" class="card-link btn btn-sm btn-secondary like-btn">좋아요 취소</a>
+        <div class="card-link btn btn-sm btn-secondary like-btn js-like">좋아요 취소</div>
       {% else %}
-        <a href="{% url 'community:like' article.pk %}" class="card-link btn btn-sm btn-danger like-btn">좋아요</a>
+        <div class="card-link btn btn-sm btn-danger like-btn js-like">좋아요</div>
       {% endif %}
     </div>
   </div>

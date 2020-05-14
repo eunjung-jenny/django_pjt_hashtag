@@ -6,10 +6,15 @@ from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.db.models import Count, Prefetch
 from django.contrib.auth import get_user_model
+from django.http import HttpResponse, JsonResponse
+import json
 
 # Create your views here.
+
+
 def index(request):
-    articles = Article.objects.select_related('creator').prefetch_related('like_users').annotate(like_users_count=Count('like_users')).order_by('-pk')
+    articles = Article.objects.select_related('creator').prefetch_related(
+        'like_users').annotate(like_users_count=Count('like_users')).order_by('-pk')
     term = None
     context = {
         'articles': articles,
@@ -17,6 +22,8 @@ def index(request):
     }
     return render(request, 'community/index.html', context)
 
+
+@require_POST
 @login_required
 def post(request):
     if request.method == 'POST':
@@ -25,7 +32,7 @@ def post(request):
             article = form.save(commit=False)
             article.creator = request.user
             article.save()
-            
+
             hashtags = request.POST['hashtags'].split('#')[1:]
             for hashtag in hashtags:
                 if not Hashtag.objects.filter(tag=hashtag).exists():
@@ -34,7 +41,7 @@ def post(request):
                     h.save()
                 else:
                     h = Hashtag.objects.get(tag=hashtag)
-                
+
                 h.has_articles.add(article)
             messages.success(request, '글을 성공적으로 게시하였습니다.')
             return redirect('community:index')
@@ -44,36 +51,19 @@ def post(request):
         form = ArticleForm()
     context = {
         'form': form,
-    }    
+    }
     return render(request, 'community/form.html', context)
 
+
+@require_POST
 @login_required
 def like(request, article_pk):
     article = get_object_or_404(Article, pk=article_pk)
-    BASE_URL = 'http://127.0.0.1:8000' if 'heroku' not in request.get_host() else 'https://secure-bayou-79410.herokuapp.com'
-    
-    if request.META.get('HTTP_REFERER'):
-        previous_url = request.META.get('HTTP_REFERER')
-        
-        # 로그인 페이지에서 넘어오는 경우, 좋아요 카운팅 하지 않고 디테일 페이지 보여줌
-        if previous_url != BASE_URL + resolve_url('community:index') and previous_url != BASE_URL + resolve_url('community:detail', article_pk):
-            return redirect('community:detail', article_pk)
-
-        if request.user in article.like_users.all():
-            article.like_users.remove(request.user)
-            messages.warning(request, '좋아요를 취소하였습니다.')    
-        else:
-            article.like_users.add(request.user)
-            messages.success(request, '좋아요를 눌렀습니다.')
-        
-        if previous_url == BASE_URL + resolve_url('community:index'):
-            return redirect('community:index')
-        elif previous_url == BASE_URL + resolve_url('community:detail', article_pk):
-            return redirect('community:detail', article_pk)            
-
-    # 외부 페이지에서 넘어오는 경우
+    if request.user in article.like_users.all():
+        article.like_users.remove(request.user)
     else:
-        return redirect('community:detail', article_pk)
+        article.like_users.add(request.user)
+    return JsonResponse({"cnt": article.like_users.count()})
 
 
 @login_required
@@ -87,6 +77,7 @@ def detail(request, article_pk):
         'child_comment_form': child_comment_form,
     }
     return render(request, 'community/detail.html', context)
+
 
 @login_required
 def edit(request, article_pk):
@@ -110,10 +101,10 @@ def edit(request, article_pk):
                         h.save()
                     else:
                         h = Hashtag.objects.get(tag=hashtag)
-                    
+
                     h.has_articles.add(article)
                 messages.success(request, '글을 성공적으로 수정하였습니다.')
-                return redirect('community:detail', article_pk) 
+                return redirect('community:detail', article_pk)
             else:
                 messages.error(request, '글 수정에 실패하였습니다.')
         else:
@@ -124,11 +115,12 @@ def edit(request, article_pk):
         context = {
             'form': form,
             'hashtags': hashtags
-        }    
+        }
         return render(request, 'community/form.html', context)
     else:
-        messages.error(request, '수정 권한이 없습니다.')   
+        messages.error(request, '수정 권한이 없습니다.')
         return redirect('community:detail', article_pk)
+
 
 def delete(request, article_pk):
     article = get_object_or_404(Article, pk=article_pk)
@@ -136,9 +128,10 @@ def delete(request, article_pk):
         article.delete()
     return redirect('community:index')
 
+
 def search(request):
     term = request.GET.get('term')
-    is_exist = Hashtag.objects.filter(tag=term).exists()        
+    is_exist = Hashtag.objects.filter(tag=term).exists()
     if is_exist:
         hashtag = Hashtag.objects.get(tag=term)
         articles = Article.objects.filter(has_hashtags=hashtag)
@@ -149,6 +142,7 @@ def search(request):
         'term': term,
     }
     return render(request, 'community/index.html', context)
+
 
 @login_required
 @require_POST
@@ -164,6 +158,7 @@ def comment_create(request, article_pk):
     else:
         messages.error(request, '댓글 작성에 실패하였습니다.')
     return redirect('community:detail', article_pk)
+
 
 @login_required
 @require_POST
@@ -182,6 +177,7 @@ def child_comment_create(request, article_pk, comment_pk):
         messages.error(request, '댓글 작성에 실패하였습니다.')
     return redirect('community:detail', article_pk)
 
+
 @login_required
 def comment_delete(request, article_pk, comment_pk):
     comment = get_object_or_404(Comment, pk=comment_pk)
@@ -194,6 +190,7 @@ def comment_delete(request, article_pk, comment_pk):
     else:
         messages.error(request, '댓글 삭제 권한이 없습니다.')
     return redirect('community:detail', article_pk)
+
 
 @login_required
 def child_comment_delete(request, article_pk, child_comment_pk):

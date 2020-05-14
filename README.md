@@ -162,3 +162,15 @@
 #### (5) Debug panel
 
 - [django-debug-toolbar](https://django-debug-toolbar.readthedocs.io/en/latest/installation.html)
+
+#### (6) fetch 를 이용한 ajax 통신 (=> 좋아요 기능 수정)
+
+- [promise 는 어려워](https://stackoverflow.com/questions/37555031/why-does-json-return-a-promise)
+  - fetch 를 하면 서버에서 헤더가 도착하자마자 response 를 받게 되고, 이 때 아직 body 전체가 로딩되기 이전이라 `fetch(~~).then(res => res.json())` 를 했을 때 `res.json()` 은 또 다른 promise 가 됨.
+  - `then` 을 두 번 사용하거나 `then` 과 `async ... await` 를 함께 사용하여 해결
+- 해로쿠 배포시 복잡했던 url 인식 이슈가 사라짐
+- 주소창에 해당 api 요청 주소를 입력하여 접근시 json 데이터가 보여지는 문제가 있었음
+  - 1. 일단은 `@require_POST` 를 통해 해결
+    - csrf token 을 넘겨줘야 하는 이슈가 있었는데 토큰은 `document.cookie` 에서 찾을 수 있고 이를 `header` 에 함께 보내줘야 함
+  - 2. url 을 기존의 `/community/<pk>/like/` 로 만들었는데 `/api/v1/like/` 이런 식으로 분리해야 하는건가?
+  - 3. DRF 사용하여 api server 구축하면더 편리해지는가?

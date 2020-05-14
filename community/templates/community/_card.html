@@ -28,9 +28,9 @@
         </button>
         {% if request.user.is_authenticated %}
           {% if request.user in article.like_users.all %}
-            <a href="{% url 'community:like' article.pk %}" class="card-link btn btn-sm btn-secondary like-btn">좋아요 취소</a>
+            <div class="btn btn-sm btn-secondary like-btn js-like">좋아요 취소</div>
           {% else %}
-            <a href="{% url 'community:like' article.pk %}" class="card-link btn btn-sm btn-danger like-btn">좋아요</a>
+            <div class="btn btn-sm btn-secondary like-bt js-like">좋아요</div>
           {% endif %}
         {% endif %}
       </div>
