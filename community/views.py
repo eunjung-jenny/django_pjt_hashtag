@@ -59,11 +59,19 @@ def post(request):
 @login_required
 def like(request, article_pk):
     article = get_object_or_404(Article, pk=article_pk)
+
     if request.user in article.like_users.all():
         article.like_users.remove(request.user)
+        liked = False
     else:
         article.like_users.add(request.user)
-    return JsonResponse({"cnt": article.like_users.count()})
+        liked = True
+
+    context = {
+        'liked': liked,
+        'count': article.like_users.count()
+    }
+    return JsonResponse(context)
 
 
 @login_required

@@ -24,13 +24,13 @@
       >
       <div>
         <button type="button" class="btn btn-sm btn-light border border-danger" data-toggle="modal" data-target="#likeModal_{{ article.pk }}">
-          <i class="fas fa-heart"></i><span class="badge badge-light">{{ article.like_users_count }}</span>
+          <i class="fas fa-heart"></i><span id="like-count-{{ article.pk }}"class="badge badge-light">{{ article.like_users_count }}</span>
         </button>
         {% if request.user.is_authenticated %}
           {% if request.user in article.like_users.all %}
-            <div class="btn btn-sm btn-secondary like-btn js-like">좋아요 취소</div>
+            <div class="btn btn-sm btn-secondary like-btn js-like" data-id="{{ article.pk }}">좋아요 취소</div>
           {% else %}
-            <div class="btn btn-sm btn-secondary like-bt js-like">좋아요</div>
+            <div class="btn btn-sm btn-secondary like-bt js-like" data-id="{{ article.pk }}">좋아요</div>
           {% endif %}
         {% endif %}
       </div>

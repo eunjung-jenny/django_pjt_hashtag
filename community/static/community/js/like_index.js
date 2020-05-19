@@ -1,25 +1,28 @@
 const likeBtns = document.querySelectorAll(".js-like");
 
-const toggleLike = async (event) => {
-  // 인덱스 페이지 vs 디테일 페이지
-  const btn = event.target;
-  const likeCntSpan = btn.previousElementSibling.querySelector(
-    "span"
+const changeTemplate = function (target, { liked, count }) {
+  if (liked) {
+    target.innerText = "좋아요 취소";
+  } else {
+    target.innerText = "좋아요";
+  }
+
+  const id = target.dataset.id;
+  const countSpan = document.querySelector(
+    `#like-count-${id}`
   );
-  const currCnt = Number(likeCntSpan.innerText);
-  const article =
-    btn.parentElement.parentElement.parentElement;
-  const article_pk = article
-    .querySelector("a")
-    ["href"].split("/community/")[1]
-    .replace("/", "");
-  const url = `/community/${article_pk}/like/`;
+  countSpan.innerText = count;
+};
+
+const toggleLike = function ({ target }) {
+  const id = target.dataset.id;
+  const URL = `/community/${id}/like/`;
   const csrfToken = document.cookie
     .split("; ")
     .filter((str) => str.includes("csrftoken"))[0]
     .split("=")[1];
 
-  const data = await fetch(url, {
+  fetch(URL, {
     credentials: "include",
     method: "POST",
     headers: {
@@ -27,18 +30,7 @@ const toggleLike = async (event) => {
     },
   })
     .then((res) => res.json())
-    .catch((err) => console.log(err));
-
-  const newCnt = Number(data["cnt"]);
-
-  if (typeof newCnt !== "undefined") {
-    likeCntSpan.innerText = newCnt;
-    if (newCnt + 1 === currCnt) {
-      btn.innerText = "좋아요";
-    } else if (currCnt + 1 === newCnt) {
-      btn.innerText = "좋아요 취소";
-    }
-  }
+    .then((data) => changeTemplate(target, data));
 };
 
 if (likeBtns) {
